@@ -1,0 +1,3 @@
+[submodule "netrek-server"]
+	path = netrek-server
+	url = https://github.com/quozl/netrek-server.git
