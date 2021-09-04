@@ -1,3 +1,6 @@
 [submodule "netrek-server"]
 	path = netrek-server
 	url = https://github.com/quozl/netrek-server.git
+[submodule "netrek-client-cow"]
+	path = netrek-client-cow
+	url = https://github.com/quozl/netrek-client-cow.git
