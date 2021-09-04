@@ -1,0 +1,52 @@
+#!/bin/bash -e
+HERE=$(pwd)
+
+# check for package dependencies
+echo check for dependencies
+if [[ -e /etc/os-release ]]; then
+    source /etc/os-release
+    if [[ $ID_LIKE == "debian" ]]; then
+	PASS=true
+	for package in \
+	    libtool libgdbm-dev \
+	    libx11-dev libxt-dev libxxf86vm-dev \
+	    libimlib2-dev libsdl-mixer1.2-dev libsdl1.2-dev; do
+	    dpkg-query -W $package >/dev/null 2>/dev/null && continue
+	    PASS=false
+	    echo missing package $package
+	done
+	if [[ $PASS == "false" ]]; then
+	    echo install missing packages
+	    exit 1
+	fi
+    fi
+fi
+
+# build the netrek server
+echo build netrek server
+cd $HERE/netrek-server
+./autogen.sh > autogen.log 2>&1
+./configure --prefix=$(pwd)/here > configure.log 2>&1
+make > make.log 2>&1
+make install > make-install.log 2>&1
+cd $HERE
+
+# configure the netrek server for local practice
+echo configure netrek server
+echo Your Local Server > netrek-server/here/etc/comment
+sed -i 's/PRET=0/PRET=1/g' netrek-server/here/etc/sysdef
+mkdir -p netrek-server/here/etc/og
+if [[ ! -e netrek-server/here/etc/og/og ]]; then
+    # be very easy for new players
+    echo "hm 7" > netrek-server/here/etc/og/og
+fi
+
+# build the netrek client
+echo build netrek client
+cd $HERE/netrek-client-cow
+./autogen.sh > autogen.log 2>&1
+./configure > configure.log 2>&1
+make > make.log 2>&1
+cd $HERE
+
+echo ok

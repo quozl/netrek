@@ -1,0 +1,15 @@
+#!/bin/bash -e
+
+# start the netrek server listening for connections
+netrek-server/here/bin/netrekd
+
+# start the netrek client
+(cd netrek-client-cow && ./netrek-client-cow)
+
+# when the client quits
+
+# stop the game
+netrek-server/here/lib/tools/setgame terminate wait-for-terminate
+
+# stop the server listening for connections
+netrek-server/here/bin/netrekd stop
